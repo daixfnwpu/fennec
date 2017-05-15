@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+APP_NAME='fennec'
+
 # Skip this step for jobs that don't run exunit
-test "${PRESET}" == "exunit" || exit 0
+test "${PRESET}" == "test" || exit 0
 
 MIX_ENV=prod mix docker.build
 MIX_ENV=prod mix docker.release
@@ -15,10 +17,10 @@ elif [ "${TRAVIS_BRANCH}" == 'master' ]; then
     DOCKERHUB_TAG="latest";
 fi
 
-TARGET_IMAGE="${DOCKERHUB_REPOSITORY}/fennec:${DOCKERHUB_TAG}"
+TARGET_IMAGE="${DOCKERHUB_REPOSITORY}/${APP_NAME}:${DOCKERHUB_TAG}"
 
 if [ "${TRAVIS_SECURE_ENV_VARS}" == 'true' ]; then
   docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_PASS}"
-  docker tag fennec:release "${TARGET_IMAGE}"
+  docker tag ${APP_NAME}:release "${TARGET_IMAGE}"
   docker push "${TARGET_IMAGE}"
 fi
